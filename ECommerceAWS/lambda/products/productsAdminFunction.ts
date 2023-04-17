@@ -1,10 +1,17 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { DynamoDB } from "aws-sdk";
+import { DynamoDB, Lambda } from "aws-sdk";
+import { ProductEvent, ProductEventType } from "/opt/nodejs/productsEventsLayer";
 import { Context } from "vm";
 import { Product, ProductRepository } from "/opt/nodejs/productsLayer";
+import * as AWSXray from 'aws-xray-sdk';
+
+AWSXray.captureAWS(require('aws-sdk'));
 
 const productsDdb = process.env.PRODUCTS_DDB!;
+const productsEventsFunctionName = process.env.PRODUCTS_EVENTS_FUNCTION_NAME!;
+
 const ddbClient = new DynamoDB.DocumentClient();
+const lambdaClient = new Lambda();
 
 const productRepository = new ProductRepository(ddbClient, productsDdb);
 
@@ -22,6 +29,15 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
         const product = JSON.parse(event.body!) as Product 
         const productCreated = await productRepository.create(product);
         
+        const response = await sendProductEvent(
+            productCreated,
+            ProductEventType.CREATED,
+            'teste@gmail.com',
+            lambdaRequestId
+        );
+
+        console.log(response);
+
         return {
             statusCode: 201,
             body: JSON.stringify(productCreated)
@@ -35,6 +51,15 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
                 const product = JSON.parse(event.body!) as Product
                 const productUpdated = await productRepository.update(product, productId);
         
+                const response = await sendProductEvent(
+                    productUpdated,
+                    ProductEventType.UPDATED,
+                    'teste123@gmail.com',
+                    lambdaRequestId
+                );
+
+                console.log(response);
+
                 return {
                     statusCode: 200,
                     body: JSON.stringify(productUpdated)
@@ -42,12 +67,21 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
             } catch (ConditionCheckFailedException) {
                 return {
                     statusCode: 404,
-                    body: 'ProductNotFound'
+                    body: 'Product Not Found'
                 };
             }
         }else {
             try {
                 const productDeleted = await productRepository.delete(productId);
+
+                const response = await sendProductEvent(
+                    productDeleted,
+                    ProductEventType.DELETED,
+                    'teste456@gmail.com',
+                    lambdaRequestId
+                );
+
+                console.log(response);
 
                 return {
                     statusCode: 200,
@@ -67,4 +101,21 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
         statusCode: 400,
         body: JSON.stringify({ message: "BAD REQUEST" })
     };
+}
+
+function sendProductEvent(product: Product, eventType: ProductEventType, email: string, lambdaRequestId: string) {
+    const event: ProductEvent = {
+        email: email,
+        eventType: eventType,
+        productCode: product.code,
+        productId: product.id,
+        productPrice: product.price,
+        requestId: lambdaRequestId
+    };
+    
+    return lambdaClient.invoke({
+        FunctionName: productsEventsFunctionName,
+        Payload: JSON.stringify(event),
+        InvocationType: 'Event'
+    }).promise();
 }

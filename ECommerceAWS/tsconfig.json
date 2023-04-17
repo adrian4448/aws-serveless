@@ -26,6 +26,18 @@
     "paths": {
       "/opt/nodejs/productsLayer": [
         "lambda/products/layers/productsLayer/nodejs/productRepository"
+      ],
+      "/opt/nodejs/productsEventsLayer": [
+        "lambda/products/layers/productsEventsLayer/nodejs/productEvent"
+      ],
+      "/opt/nodejs/ordersLayers": [
+        "lambda/orders/layers/ordersLayers/nodejs/orderRepository"
+      ],
+      "/opt/nodejs/ordersApiLayer": [
+        "lambda/orders/layers/ordersApiLayer/nodejs/orderApi"
+      ],
+      "/opt/nodejs/orderEventsLayer": [
+        "lambda/orders/layers/orderEventsLayer/nodejs/ordersEvent"
       ]
     }
   },
