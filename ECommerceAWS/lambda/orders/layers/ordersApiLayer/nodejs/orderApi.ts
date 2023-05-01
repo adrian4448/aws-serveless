@@ -37,7 +37,7 @@ export interface OrderResponse {
         payment: PaymentType,
         totalPrice: number
     }
-    products: OrderProductResponse[],
+    products?: OrderProductResponse[],
     shipping: {
         type: ShippingType,
         carrier: CarrierType
