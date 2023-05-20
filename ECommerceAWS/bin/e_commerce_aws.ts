@@ -7,6 +7,7 @@ import { ProductsAppLayers } from '../lib/productsAppLayers-stack';
 import { EventsDdbStack } from '../lib/eventsDdb-stack';
 import { OrderAppLayersStack } from '../lib/orderAppLayers-stack';
 import { OrdersAppStack } from '../lib/ordersApp-stack';
+import { InvoiceWSApiStack } from '../lib/invoiceWSApi-stack';
 
 const app = new cdk.App();
 
@@ -60,9 +61,18 @@ const ecommerceApiGatewayStack = new ECommerceApiGatewayStack(app, 'ECommerceApi
   productsFetchHandler: productsAppStack.productsFetchHandler,
   productsAdminHandler: productsAppStack.productsAdminHandler,
   ordersHandler: ordersAppStack.ordersHandler,
+  orderEventsFetchHandler: ordersAppStack.orderEventsFetchHandler,
   tags: tags,
   env: env,
 });
 
 ecommerceApiGatewayStack.node.addDependency(productsAppStack);
 ecommerceApiGatewayStack.node.addDependency(ordersAppStack);
+
+const invoiceWSInvoiceStack = new InvoiceWSApiStack(app, 'InvoiceWSApiStack', {
+  tags: {
+    cost: 'InvoiceApp',
+    team: 'AdrianTeste'
+  },
+  env: env
+});
