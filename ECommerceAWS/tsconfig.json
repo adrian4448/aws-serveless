@@ -40,7 +40,16 @@
         "lambda/orders/layers/orderEventsLayer/nodejs/ordersEvent"
       ],
       "/opt/nodejs/orderEventsRepositoryLayer": [
-        "lambda/orders//layers/orderEventsRepositoryLayer/nodejs/ordersEventRepository"
+        "lambda/orders/layers/orderEventsRepositoryLayer/nodejs/ordersEventRepository"
+      ],
+      "/opt/nodejs/invoiceRepository": [
+        "lambda/invoices/layers/invoiceLayer/nodejs/invoiceRepository"
+      ],
+      "/opt/nodejs/invoiceTranscationLayer": [
+        "lambda/invoices/layers/invoiceTranscationLayer/nodejs/invoiceTranscationLayer"
+      ],
+      "/opt/nodejs/invoiceWSConnection": [
+        "lambda/invoices/layers/invoiceWSConnection/nodejs/invoiceWSConnection"
       ]
     }
   },

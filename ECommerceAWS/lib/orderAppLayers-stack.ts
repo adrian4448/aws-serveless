@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { StackProps } from 'aws-cdk-lib';
 
 export class OrderAppLayersStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
