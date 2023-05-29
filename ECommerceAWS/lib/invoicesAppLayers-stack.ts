@@ -8,16 +8,16 @@ export class InvoicesAppLayersStack extends cdk.Stack {
         super(scope, id, props);
 
         // Invoice Transaction Layer
-        const invoiceTranscationLayer = new lambda.LayerVersion(this, 'InvoiceTranscationLayer', {
-            code: lambda.Code.fromAsset('lambda/invoices/layers/invoiceTranscationLayer'),
+        const invoiceTransactionLayer = new lambda.LayerVersion(this, 'InvoiceTransactionLayer', {
+            code: lambda.Code.fromAsset('lambda/invoices/layers/invoiceTransaction'),
             compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
-            layerVersionName: 'InvoiceTranscationLayer',
+            layerVersionName: 'InvoiceTransactionLayer',
             removalPolicy: cdk.RemovalPolicy.RETAIN
         });
 
-        new ssm.StringParameter(this, 'InvoiceTranscationLayerArn', {
-            parameterName: 'InvoiceTranscationLayerArn',
-            stringValue: invoiceTranscationLayer.layerVersionArn
+        new ssm.StringParameter(this, 'InvoiceTransactionLayerArn', {
+            parameterName: 'InvoiceTransactionLayerArn',
+            stringValue: invoiceTransactionLayer.layerVersionArn
         });
 
         // Invoice Layer

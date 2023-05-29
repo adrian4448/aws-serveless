@@ -43,10 +43,10 @@
         "lambda/orders/layers/orderEventsRepositoryLayer/nodejs/ordersEventRepository"
       ],
       "/opt/nodejs/invoiceRepository": [
-        "lambda/invoices/layers/invoiceLayer/nodejs/invoiceRepository"
+        "lambda/invoices/layers/invoiceRepository/nodejs/invoiceRepository"
       ],
-      "/opt/nodejs/invoiceTranscationLayer": [
-        "lambda/invoices/layers/invoiceTranscationLayer/nodejs/invoiceTranscationLayer"
+      "/opt/nodejs/invoiceTransaction": [
+        "lambda/invoices/layers/invoiceTransaction/nodejs/invoiceTransaction"
       ],
       "/opt/nodejs/invoiceWSConnection": [
         "lambda/invoices/layers/invoiceWSConnection/nodejs/invoiceWSConnection"

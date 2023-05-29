@@ -8,7 +8,7 @@ import { EventsDdbStack } from '../lib/eventsDdb-stack';
 import { OrderAppLayersStack } from '../lib/orderAppLayers-stack';
 import { OrdersAppStack } from '../lib/ordersApp-stack';
 import { InvoiceWSApiStack } from '../lib/invoiceWSApi-stack';
-import { InvoicesAppLayersStack } from 'lib/invoicesAppLayers-stack';
+import { InvoicesAppLayersStack } from '../lib/invoicesAppLayers-stack';
 
 const app = new cdk.App();
 
@@ -85,5 +85,3 @@ const invoiceWSInvoiceStack = new InvoiceWSApiStack(app, 'InvoiceWSApiStack', {
   },
   env: env
 });
-
-invoiceWSInvoiceStack.node.addDependency(invoiceAppLayerStack)

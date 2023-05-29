@@ -2,6 +2,8 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda
 import { ApiGatewayManagementApi, DynamoDB, S3 } from "aws-sdk";
 import * as AWSXray from 'aws-xray-sdk';
 import { v4 as uuid } from 'uuid';
+import { InvoiceTransactionRepository, InvoiceTransactionStatus } from "/opt/nodejs/invoiceTransaction";
+import { InvoiceWSService } from "/opt/nodejs/invoiceWSConnection";
 
 AWSXray.captureAWS(require('aws-sdk'))
 
@@ -14,6 +16,9 @@ const dynamodbClient = new DynamoDB.DocumentClient();
 const apigwManagementApi = new ApiGatewayManagementApi({ 
     endpoint: invoicesWsApiEndpoint
 });
+
+const invoiceTransactionRepository = new InvoiceTransactionRepository(dynamodbClient, invoicesDdb)
+const invoiceWSService = new InvoiceWSService(apigwManagementApi);
 
 export async function handler (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
     
@@ -32,6 +37,28 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
         Key: key,
         Expires: expires
     });
+
+    const timestamp = Date.now();
+    const ttl = ~~(timestamp / 1000 + 60 * 2);
+
+    await invoiceTransactionRepository.createInvoiceTransaction({
+        pk: '#transaction',
+        sk: key,
+        ttl: ttl,
+        timestamp: timestamp,
+        requestId: lambdaRequestId,
+        transactionStatus: InvoiceTransactionStatus.GENERATED,
+        expiresIn: expires,
+        connectionId: connectionId,
+        endpoint: invoicesWsApiEndpoint
+    });
+
+    const postData = JSON.stringify({
+        url: signedUrlPut,
+        expires: expires,
+        transactionId: key
+    });
+    await invoiceWSService.sendData(connectionId, postData);
 
     return {
         statusCode: 200,
